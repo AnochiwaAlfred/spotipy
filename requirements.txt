@@ -12,6 +12,7 @@ gunicorn==21.2.0
 idna==3.4
 packaging==23.1
 Pillow==10.0.1
+psycopg==3.1.10
 pydantic==1.10.12
 python-decouple==3.8
 requests==2.31.0

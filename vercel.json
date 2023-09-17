@@ -1,0 +1,14 @@
+{
+    "builds": [
+      {
+        "src": "spotipy/wsgi.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "spotipy/wsgi.py"
+      }
+    ]
+}

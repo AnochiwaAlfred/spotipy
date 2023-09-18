@@ -123,17 +123,17 @@ WSGI_APPLICATION = "spotipy.wsgi.application"
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'URL': config('POSTGRES_URL'),
-        'NAME': config('PGNAME'),
-        'USER': config('PGUSER'),
-        'PASSWORD': config('POSTGRES_PASSWORD'),
-        'HOST': config('PGHOST'),
-        'PORT': config('PGPORT'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'URL': config('POSTGRES_URL'),
+#         'NAME': config('PGNAME'),
+#         'USER': config('PGUSER'),
+#         'PASSWORD': config('POSTGRES_PASSWORD'),
+#         'HOST': config('PGHOST'),
+#         'PORT': config('PGPORT'),
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -171,9 +171,10 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 MEDIA_URL = "/media/"
+MEDIA_URLS ='/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

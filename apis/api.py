@@ -52,8 +52,8 @@ api = NinjaAPI(
 # let this be the first one.
 # api.add_router("/auth/", auth_router)
 # -----------------------------------------
-api.add_router("/tracks/", tracks_router)
-api.add_router("/albums/", albums_router)
+api.add_router("/track/", tracks_router)
+api.add_router("/album/", albums_router)
 
 
 
@@ -69,8 +69,8 @@ class SuperAuth(HttpBearer):
             return foundUser.encoded
 
 
-super_authenticator = SuperAuth() if config("ENVIRONMENT") == "production" else None
-
+# super_authenticator = SuperAuth() if config("ENVIRONMENT") == "production" else None
+super_authenticator=None
 
 @os_router.delete("/deleteMigrations", auth=super_authenticator)
 def delete_migrations(request):

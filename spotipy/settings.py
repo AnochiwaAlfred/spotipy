@@ -123,17 +123,17 @@ WSGI_APPLICATION = "spotipy.wsgi.application"
 
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'URL': config('POSTGRES_URL'),
-#         'NAME': config('PGNAME'),
-#         'USER': config('PGUSER'),
-#         'PASSWORD': config('POSTGRES_PASSWORD'),
-#         'HOST': config('PGHOST'),
-#         'PORT': config('PGPORT'),
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'URL': config('POSTGRES_URL'),
+        'NAME': config('PGNAME'),
+        'USER': config('PGUSER'),
+        'PASSWORD': config('POSTGRES_PASSWORD'),
+        'HOST': config('PGHOST'),
+        'PORT': config('PGPORT'),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

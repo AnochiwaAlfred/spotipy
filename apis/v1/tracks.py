@@ -22,3 +22,11 @@ def getAllTracksMini(request):
         ) 
     for track in tracks]
     return tracks2
+
+@router.get('/getTrackById/{id}', response=Union[TrackRetrievalSchema, str])
+def getTrackById(request, id):
+    track = Track.objects.filter(id=id)
+    if track.exists():
+        return track[0]
+    else:
+        return f"Track with ID {id} does not exist"

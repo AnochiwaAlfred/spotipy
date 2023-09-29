@@ -5,11 +5,11 @@ from plugins.generate_filename import generate_filename
 
 class Client(CustomUser):
     image = models.ImageField(null=True, blank=True, upload_to=generate_filename)
-    favoriteTracks = models.ManyToManyField(
-        "audio.Track",
-        blank=True,
-        related_name="favoriteTracks",
-    )
+    # favoriteTracks = models.ManyToManyField(
+    #     "audio.Track",
+    #     blank=True,
+    #     related_name="favoriteTracks",
+    # )
 
     class Meta:
         verbose_name = "Client"

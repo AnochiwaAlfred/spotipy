@@ -3,6 +3,7 @@ from typing import List, Union
 from schemas.tracks import *
 from schemas.album import *
 from audio.models import *
+from django.db.models import Q
 
 router = Router(tags=["Albums Router"])
 
@@ -18,3 +19,8 @@ def getAlbumById(request, id):
         return album[0]
     else:
         return f"Album with ID {id} does not exists"
+
+@router.get('/searchAlbums/{query}', response=List[AlbumRetrievalSchema])
+def searchAlbums(request, query):
+    albums = Album.objects.filter(Q(title__icontains=query) | Q(artist__stageName__icontains=query))
+    return albums

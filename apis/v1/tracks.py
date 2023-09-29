@@ -2,6 +2,8 @@ from ninja import Router
 from typing import List, Union
 from schemas.tracks import *
 from audio.models import *
+from django.db.models import Q
+
 
 router = Router(tags=["Tracks Router"])
 
@@ -30,3 +32,9 @@ def getTrackById(request, id):
         return track[0]
     else:
         return f"Track with ID {id} does not exist"
+    
+    
+@router.get('/searchTrack/{query}', response=List[TrackRetrievalSchema])
+def searchTracks(request, query):
+    tracks = Track.objects.filter(Q(title__icontains=query) | Q(artist__stageName__icontains=query))
+    return tracks

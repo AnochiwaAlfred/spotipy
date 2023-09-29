@@ -1,7 +1,6 @@
 
 from ninja import NinjaAPI, Router
 from ninja.security import django_auth
-from ninja.security import HttpBearer
 from django.http import HttpResponseForbidden
 from users.models import CustomUser
 from django.http import HttpResponseForbidden, response
@@ -10,6 +9,7 @@ from decouple import config
 from apis.v1.tracks import router as tracks_router
 from apis.v1.albums import router as albums_router
 from apis.v1.artists import router as artists_router
+from apis.v1.os import router as os_router
 
 # from plugins.email_token import sendUserEmail
 from django.utils import timezone
@@ -59,62 +59,6 @@ api.add_router("/album/", albums_router)
 
 
 
-os_router = Router(tags=["OS Endpoints"])
 
-
-class SuperAuth(HttpBearer):
-    def authenticate(self, request, token):
-        # user =  User.objects.all().filter(encoded=token,is_token_verified=True)
-        user = CustomUser.objects.all().filter(encoded=token)
-        if user.exists() and user[0].is_superuser == True:
-            foundUser = user.get()
-            return foundUser.encoded
-
-
-# super_authenticator = SuperAuth() if config("ENVIRONMENT") == "production" else None
-super_authenticator=None
-
-@os_router.delete("/deleteMigrations", auth=super_authenticator)
-def delete_migrations(request):
-    from spotipy.settings import BASE_DIR
-    import os, json, shutil
-
-    BASE_DIR = os.path.abspath(os.path.join(BASE_DIR, os.pardir))
-
-    dir_list = os.listdir(BASE_DIR)
-    dir_list2 = [os.path.join(BASE_DIR, x) for x in dir_list if "." not in x]
-    message = "No migration to delete"
-    for item in dir_list2:
-        if os.path.isdir(item):
-            for dir in os.listdir(item):
-                if dir == "migrations":
-                    # migrationList.append(os.path.join(BASE_DIR, item, dir))
-                    try:
-                        shutil.rmtree(os.path.join(BASE_DIR, item, dir))
-                        message = "Migrations Deleted"
-                    except OSError as e:
-                        message = f"Error: {e}"
-    return message
-
-
-@os_router.delete("/deletePyCache", auth=super_authenticator)
-def delete_pycache_folders(request):
-    from spotipy.settings import BASE_DIR
-    import os, shutil
-
-    BASE_DIR = os.path.abspath(os.path.join(BASE_DIR, os.pardir))
-    for root, dirs, files in os.walk(BASE_DIR):
-        for dir in dirs:
-            if dir == "__pycache__":
-                folder_path = os.path.join(root, dir)
-                shutil.rmtree(folder_path)
-                # print(f"Deleted {folder_path}")
-    return f"Deleted All Pycache"
-
-
-def addRouterCheck():
-    if config("ENVIRONMENT") == "development":
-        api.add_router("/os/", os_router)
-
-
-addRouterCheck()
+if config("ENVIRONMENT") == "development":
+    api.add_router("/os/", os_router)

@@ -35,3 +35,9 @@ def getArtistById(request, id):
         return artist[0]
     else:
         return f"Artist with ID {id} does not exists"
+
+
+@router.get('/searchArtists/{query}', response=List[ArtistRetrievalSchema])
+def searchArtists(request, query):
+    artists = Artist.objects.filter(stageName__icontains=query)
+    return artists

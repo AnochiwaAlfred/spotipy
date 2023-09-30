@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+
+import dj_database_url
 from core.core_settings.installed_apps import *
 import os
 from decouple import config
@@ -115,6 +117,8 @@ WSGI_APPLICATION = "spotipy.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+
+
 if config("ENVIRONMENT") == "development":
     DATABASES = {
         "default": {
@@ -122,17 +126,10 @@ if config("ENVIRONMENT") == "development":
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+
 elif config("ENVIRONMENT") == "production":
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'URL': config('POSTGRES_URL'),
-            'NAME': config('PGNAME'),
-            'USER': config('PGUSER'),
-            'PASSWORD': config('POSTGRES_PASSWORD'),
-            'HOST': config('PGHOST'),
-            'PORT': config('PGPORT'),
-        }
+        'default': dj_database_url.parse(config("DATABASE_URL"))
     }
 
 # Password validation

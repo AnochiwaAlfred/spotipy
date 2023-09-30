@@ -1,8 +1,9 @@
-# from ninja import Router
-# from decouple import config
-# from ninja import NinjaAPI, Form
-# from ninja.security import HttpBearer
-# from authuser.models import *
+from ninja import Router
+from decouple import config
+from ninja import NinjaAPI, Form
+from ninja.security import HttpBearer
+from users.models import *
+from schemas.auth import *
 # from django.contrib.auth import authenticate
 # from plugins.hasher import hasherGenerator, decrypter
 # import json
@@ -15,7 +16,7 @@
 # from plugins.email_token import sendUserEmail
 # from plugins.hasher import numbershuffler
 
-# router = Router(tags=["Authentication"])
+router = Router(tags=["Authentication"])
 
 
 # @router.get("/")
@@ -148,3 +149,14 @@
 #     return {
 #         "message": "User Logged Out; You can sign in again using your username and password."
 #     }
+
+@router.post('createSuperUser', response=AuthUserRetrievalSchema)
+def createSuperUser(request, data:AuthUserRegistrationSchema, password:str):
+    authuser = CustomUser.objects.create(**data.dict())
+    if authuser:
+        authuser.set_password(password)
+        authuser.is_active=True
+        authuser.is_staff=True
+        authuser.is_superuser=True
+        authuser.save()
+    return authuser

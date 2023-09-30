@@ -6,6 +6,7 @@ from users.models import CustomUser
 from django.http import HttpResponseForbidden, response
 from http import HTTPStatus
 from decouple import config 
+from apis.v1.auth import router as auth_router
 from apis.v1.tracks import router as tracks_router
 from apis.v1.albums import router as albums_router
 from apis.v1.artists import router as artists_router
@@ -53,6 +54,7 @@ api = NinjaAPI(
 # let this be the first one.
 # api.add_router("/auth/", auth_router)
 # -----------------------------------------
+api.add_router("/artists/", auth_router)
 api.add_router("/artists/", artists_router)
 api.add_router("/track/", tracks_router)
 api.add_router("/album/", albums_router)

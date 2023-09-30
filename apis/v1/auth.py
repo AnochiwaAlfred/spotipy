@@ -151,7 +151,7 @@ router = Router(tags=["Authentication"])
 #     }
 
 @router.post('createSuperUser', response=AuthUserRetrievalSchema)
-def createSuperUser(request, data:AuthUserRegistrationSchema, password:str):
+def createSuperUser(request, password:str, data:AuthUserRegistrationSchema=Form(...)):
     authuser = CustomUser.objects.create(**data.dict())
     if authuser:
         authuser.set_password(password)

@@ -93,3 +93,8 @@ class ArtistAdmin(UserAdmin):
         ),
         ("Permissions", {"fields": ["is_staff"]}),
     ]
+
+
+@admin.register(Follower)
+class FollowerAdmin(admin.ModelAdmin):
+    list_display = FOLLOWER_DISPLAY

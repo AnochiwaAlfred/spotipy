@@ -1,6 +1,7 @@
 from ninja import Schema
 import uuid
 from schemas.artist import *
+from schemas.clients import ClientRetrievalSchema
 from schemas.genre import *
 from datetime import date
 
@@ -24,6 +25,7 @@ class TrackRetrievalSchema(Schema):
     audioFile:str=None
     coverImage:str=None
     artist:ArtistRetrievalSchema=None
+    likes:ClientRetrievalSchema=None
     genre:GenreRetrievalSchema=None
     
 class TrackRetrievalSchemaMini(Schema):

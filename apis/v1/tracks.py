@@ -3,7 +3,9 @@ from typing import List, Union
 from schemas.tracks import *
 from audio.models import *
 from django.db.models import Q
+from decouple import config
 
+BASE_URL = config('BACKEND_BASE_URL') if config('ENVIRONMENT')=='production' else config('DEVELOPMENT_BACKEND_BASE__URL')
 
 router = Router(tags=["Tracks Router"])
 
@@ -19,7 +21,7 @@ def getAllTracksMini(request):
     tracks2 = [TrackRetrievalSchemaMini(
             id=track.id,
             title=track.title,
-            coverImage=f"http://127.0.0.1:8000{track.coverImage.url}" if track.coverImage else None,
+            coverImage=f"{BASE_URL}{track.coverImage.url}" if track.coverImage else None,
             artist=track.artist.username
         ) 
     for track in tracks]

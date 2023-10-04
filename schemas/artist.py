@@ -28,4 +28,3 @@ class ArtistRetrievalSchema(Schema):
     image:str=None
     coverImage:str=None
     dateOfBirth:date=None
-    image:str=None

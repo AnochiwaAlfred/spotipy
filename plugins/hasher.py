@@ -1,4 +1,4 @@
-import rsa
+# import rsa
 import random
 import string
 from cryptography.fernet import Fernet
@@ -27,19 +27,19 @@ def hasherGenerator():
     # Instance the Fernet class with the key
     fernet = Fernet(key)
     encMessage = fernet.encrypt(message.encode())
-    return {'key':key, 'message':message, 'encoded':encMessage}
+    return {'key':key, 'message':message, 'token':encMessage}
 
 
 
-def decrypter(key, encoded):
+def decrypter(key, token):
     '''
-    data: is passed in as a dictionary. {'key':key, 'message':message, 'encoded':encMessage}
+    data: is passed in as a dictionary. {'key':key, 'message':message, 'token':encMessage}
     '''
     fernet = Fernet(key)
-    result = fernet.decrypt(encoded).decode()
+    result = fernet.decrypt(token).decode()
     return result
 
 # dt =  hasherGenerator()
 # print(dt)
-# d = decrypter(key=dt.get('key'), encoded=dt.get('encoded'))
+# d = decrypter(key=dt.get('key'), token=dt.get('token'))
 # print(d)

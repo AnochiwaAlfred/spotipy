@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+from plugins.code_generator import generateUniqueId
 
 # Create your models here.
 
@@ -42,6 +43,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    
+    
+    # section for mananging api session login
+    code = models.CharField(max_length=10, unique=True, default=generateUniqueId, editable=False)
+    token = models.CharField(max_length=600, blank=True, null=True)
+    key = models.CharField(max_length=150, blank=True, null=True)
+    is_token_verified = models.BooleanField(default=False)
+    isPassRequest = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 

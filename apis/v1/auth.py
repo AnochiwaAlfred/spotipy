@@ -1,59 +1,54 @@
-from ninja import Router
+from ninja import Router, Schema
 from decouple import config
 from ninja import NinjaAPI, Form
 from ninja.security import HttpBearer
 from users.models import *
 from schemas.auth import *
-# from django.contrib.auth import authenticate
-# from plugins.hasher import hasherGenerator, decrypter
-# import json
-# from plugins.sms_token import token_verify, send_sms, send_token_via_sms
-# from django.conf import settings
+from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib.auth import authenticate
+from plugins.hasher import hasherGenerator, decrypter
+import json
+from plugins.sms_token import token_verify, send_sms, send_token_via_sms
+from django.conf import settings
 
-# from alpha_logistics.schemas.auth import AuthResetPassword
-# from typing import List, Union
-
-# from plugins.email_token import sendUserEmail
-# from plugins.hasher import numbershuffler
+from typing import List, Union
 
 router = Router(tags=["Authentication"])
 
 
-# @router.get("/")
-# def get_user(request):
-#     auth = request.auth
+@router.get("/")
+def get_user(request):
+    auth = request.auth
     
-#     user = CustomUser.objects.all().filter(encoded=auth).get()
-#     return {
-#         "id": user.id,
-#         "username": user.username,
-#         "email": user.email,
-#         "code": user.code,
-#     }
+    user = CustomUser.objects.all().filter(token=auth).get()
+    return {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "code": user.code,
+    }
 
 
-# @router.post("/token", auth=None)  # < overriding global auth
-# def get_token(request, username: str = Form(...), password: str = Form(...)):
-#     """
-#     This will be used as signup request.
-#     """
-#     user = authenticate(username=username, password=password)
-#     if user:
-#         hh = hasherGenerator()
-#         string_formatted = hh.get("encoded").decode("utf-8")
-#         hh.update({"rsa_duration": 24, "encoded": string_formatted})
+@router.post("/token", auth=None)  # < overriding global auth
+def get_token(request, username: str = Form(...), password: str = Form(...)):
+    """
+    This will be used as signup request.
+    """
+    user = authenticate(username=username, password=password)
+    if user:
+        hh = hasherGenerator()
+        string_formatted = hh.get("token").decode("utf-8")
+        hh.update({"rsa_duration": 24, "token": string_formatted})
 
-#         CustomUser.objects.all().filter(id=user.id).update(**hh)
+        CustomUser.objects.all().filter(id=user.id).update(**hh)
 
-#         return {"token": hh.get("encoded")}
+        return {"token": hh.get("token")}
     
-#     else:
-#         return {"token": False}
-#         # User is authenticated
+    else:
+        return {"token": False}
+        # User is authenticated
 
 
-# # anochiwaalfred@gmail.com
-# # Alfieolli
 # @router.get("/verify-token/{otp}", auth=None)  # < overriding global auth
 # def verify_token_code(request, otp: str):
 #     """
@@ -141,14 +136,14 @@ router = Router(tags=["Authentication"])
 
 
 
-# @router.post("/logout")
-# def logout(request):
-#     auth = request.auth
-#     user = CustomUser.objects.all().filter(encoded=auth)
-#     user.update(**{"encoded": "", "key": "", "message": "", "rsa_duration": 0})
-#     return {
-#         "message": "User Logged Out; You can sign in again using your username and password."
-#     }
+@router.post("/logout")
+def logout(request):
+    auth = request.auth
+    user = CustomUser.objects.all().filter(token=auth)
+    user.update(**{"token": "", "key": ""})
+    return {
+        "message": "User Logged Out; You can sign in again using your username and password."
+    }
 
 @router.post('createSuperUser', response=AuthUserRetrievalSchema)
 def createSuperUser(request, password:str, data:AuthUserRegistrationSchema=Form(...)):
@@ -160,3 +155,21 @@ def createSuperUser(request, password:str, data:AuthUserRegistrationSchema=Form(
         authuser.is_superuser=True
         authuser.save()
     return authuser
+
+@router.get('/getAllUsers', response=List[AuthUserRetrievalSchema])
+def getAllUsers(request):
+    users = CustomUser.objects.all()
+    return users
+
+
+User = get_user_model()
+
+@router.post("/login/")
+def login_user(request, data: UserLoginSchema):
+    user = authenticate(request, username=data.email, password=data.password)
+
+    if user is not None:
+        login(request, user)
+        return {"detail": "User logged in successfully"}
+
+    return {"detail": "Invalid credentials"}

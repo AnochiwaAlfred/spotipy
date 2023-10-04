@@ -5,15 +5,17 @@ from datetime import date
 
 
 
-class AuthUserRegistrationSchema(Schema):
+class ClientRegistrationSchema(Schema):
     email:str
+    password:str
     username:str
     firstName:str
     lastName:str
     phone:str
+    bio:str
     dateOfBirth:date
 
-class AuthUserRetrievalSchema(Schema):
+class ClientRetrievalSchema(Schema):
     id:int=None
     email:str=None
     username:str=None
@@ -22,11 +24,4 @@ class AuthUserRetrievalSchema(Schema):
     phone:str=None
     bio:str=None
     dateOfBirth:date=None
-    is_active:bool=None
-    is_staff:bool=None
-    is_superuser:bool=None
-    
-    
-class UserLoginSchema(Schema):
-    email: str
-    password: str
+    image:str=None

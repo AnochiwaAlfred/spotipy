@@ -67,5 +67,5 @@ api.add_router("/album/", albums_router)
 
 
 
-if config("ENVIRONMENT") == "production":
+if config("ENVIRONMENT") == "development":
     api.add_router("/os/", os_router)

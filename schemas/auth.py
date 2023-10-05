@@ -20,7 +20,6 @@ class AuthUserRetrievalSchema(Schema):
     firstName:str=None
     lastName:str=None
     phone:str=None
-    bio:str=None
     dateOfBirth:date=None
     is_active:bool=None
     is_staff:bool=None

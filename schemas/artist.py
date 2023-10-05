@@ -28,3 +28,13 @@ class ArtistRetrievalSchema(Schema):
     image:str=None
     coverImage:str=None
     dateOfBirth:date=None
+    
+class ArtistUpdateSchema(Schema):
+    email:str=None
+    username:str=None
+    firstName:str=None
+    lastName:str=None
+    stageName:str=None
+    phone:str=None
+    bio:str=None
+    dateOfBirth:date=None

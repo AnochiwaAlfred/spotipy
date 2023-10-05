@@ -22,9 +22,8 @@ from ninja.security import HttpBearer
 class GlobalAuth(HttpBearer):
     def authenticate(self, request, token):
         meta = request.META
-        HTTP_USER_AGENT = meta.get('HTTP_USER_AGENT')
-        user =  CustomUser.objects.all().filter(token=token, is_token_verified=True)
-        # user = CustomUser.objects.all().filter(encoded=token, isPassRequest=False)
+        # HTTP_USER_AGENT = meta.get('HTTP_USER_AGENT')
+        user =  CustomUser.objects.all().filter(token=token)
         if user.exists():
             foundUser = user.get()
         #     # on production check
@@ -55,9 +54,8 @@ api = NinjaAPI(
 )
 
 # let this be the first one.
-# api.add_router("/auth/", auth_router)
-# -----------------------------------------
 api.add_router("/auth/", auth_router)
+# -----------------------------------------
 # api.add_router("/clientauth/", clientauth_router)
 api.add_router("/artists/", artists_router)
 api.add_router("/track/", tracks_router)

@@ -38,7 +38,10 @@ def get_token(request, username: str = Form(...), password: str = Form(...)):
     if user:
         hh = hasherGenerator()
         string_formatted = hh.get("token").decode("utf-8")
-        hh.update({"rsa_duration": 24, "token": string_formatted})
+        hh.update({
+            # "rsa_duration": 24, 
+            "token": string_formatted
+        })
 
         CustomUser.objects.all().filter(id=user.id).update(**hh)
 

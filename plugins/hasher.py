@@ -27,7 +27,11 @@ def hasherGenerator():
     # Instance the Fernet class with the key
     fernet = Fernet(key)
     encMessage = fernet.encrypt(message.encode())
-    return {'key':key, 'message':message, 'token':encMessage}
+    return {
+        'key':key, 
+        # 'message':message, 
+        'token':encMessage
+    }
 
 
 

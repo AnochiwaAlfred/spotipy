@@ -65,7 +65,7 @@ class ArtistAdmin(UserAdmin):
         "firstName",
         "lastName",
         "stageName",
-        "bio",
+        # "bio",
         "image",
         "coverImage",
         "is_staff",

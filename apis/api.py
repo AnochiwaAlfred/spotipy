@@ -48,7 +48,8 @@ class GlobalAuth(HttpBearer):
 
 authenticator =  GlobalAuth() if config('ENVIRONMENT') == 'production' else None
 api = NinjaAPI(
-    auth=authenticator,
+    auth=None,
+    # auth=authenticator,
     title="Spotipy",
     description="This is an API with dynamic OpenAPI info section",
 )

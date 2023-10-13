@@ -5,12 +5,11 @@ from schemas.tracks import *
 from datetime import date
 
 
-class FollowerRetrievalSchema(Schema):
-    id:uuid.UUID
+class FollowerRegistrationSchema(Schema):
     follower_id:str=None
     followed_id:str=None
     
-class FollowerRetrievalSchemaMini(Schema):
+class FollowerRetrievalSchema(Schema):
     id:uuid.UUID
     follower:ClientRetrievalSchema=None
     followed:ArtistRetrievalSchema=None

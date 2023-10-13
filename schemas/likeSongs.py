@@ -6,11 +6,7 @@ from datetime import date
 
 
 class LikeSongRetrievalSchema(Schema):
-    id:uuid.UUID
-    client_id:str=None
-    track_id:str=None
-    
-class LikeSongRetrievalSchemaMini(Schema):
-    id:uuid.UUID
+    id:uuid.UUID=None
     client:ClientRetrievalSchema=None
     track:TrackRetrievalSchema=None
+    

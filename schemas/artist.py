@@ -12,9 +12,9 @@ class ArtistRegistrationSchema(Schema):
     firstName:str
     lastName:str
     stageName:str
-    phone:str
-    bio:str
-    dateOfBirth:date
+    phone:str=None
+    bio:str=None
+    dateOfBirth:date=None
 
 class ArtistRetrievalSchema(Schema):
     id:int=None

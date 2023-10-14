@@ -11,9 +11,8 @@ class ClientRegistrationSchema(Schema):
     username:str
     firstName:str
     lastName:str
-    phone:str
-    bio:str
-    dateOfBirth:date
+    phone:str=None
+    dateOfBirth:date=None
 
 class ClientRetrievalSchema(Schema):
     id:int=None
@@ -22,6 +21,5 @@ class ClientRetrievalSchema(Schema):
     firstName:str=None
     lastName:str=None
     phone:str=None
-    bio:str=None
     dateOfBirth:date=None
     image:str=None

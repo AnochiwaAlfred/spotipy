@@ -5,6 +5,7 @@ from schemas.album import *
 from users.models import *
 from schemas.artist import *
 from decouple import config
+from audio.models import *
 
 router = Router(tags=["Artists Router"])
 BASE_URL = config('BACKEND_BASE_URL') if config('ENVIRONMENT')=='production' else config('DEVELOPMENT_BACKEND_BASE__URL')
@@ -58,7 +59,7 @@ def searchArtists(request, query):
     artists = Artist.objects.filter(stageName__icontains=query)
     return artists
 
-@router.post('/updateArtist/{id}', response=Union[ArtistRetrievalSchema, str])
+@router.post('/artist/update/{id}', response=Union[ArtistRetrievalSchema, str])
 def updateArtist(request, id, data:ArtistUpdateSchema=Form(...)):
     instance = Artist.objects.filter(id=id)
     if instance.exists():
@@ -72,10 +73,15 @@ def updateArtist(request, id, data:ArtistUpdateSchema=Form(...)):
             return "Data Empty"
     else:
         return f"Error: Artist with ID {id} does not exist"
-    
+   
+   
+@router.post('/artist/create', response=ArtistRetrievalSchema)
+def create_artist(request, data:ArtistRegistrationSchema=Form(...)):
+    artist = Artist.objects.create(**data.dict())
+    return artist
      
 @router.post('/updateArtistImages/{id}', response=Union[ArtistRetrievalSchema, str])
-def updateArtistImages(request, id, image:UploadedFile=File(...), coverImage:UploadedFile=File(...)):
+def update_artist_images(request, id, image:UploadedFile=File(...), coverImage:UploadedFile=File(...)):
     instance = Artist.objects.filter(id=id)
     if instance.exists():
         artist = instance[0]
@@ -84,6 +90,33 @@ def updateArtistImages(request, id, image:UploadedFile=File(...), coverImage:Upl
         artist.save()
         return artist
 
-            
+
+
+@router.post('/album/create/{artist_id}', response=AlbumRetrievalSchema)
+def create_album(request, artist_id, data:AlbumRegistrationSchema=Form(...)):
+    album = Album.objects.create(artist_id=artist_id, **data.dict())
+    return album
+
+
+
+@router.post('/updateAlbumArt/{id}', response=Union[AlbumRetrievalSchema, str])
+def update_album_art(request, id, coverArt:UploadedFile=File(...)):
+    instance = Album.objects.filter(id=id)
+    if instance.exists():
+        album = instance[0]
+        album.coverArt = coverArt
+        album.save()
+        return album
+    
+@router.put('/album/addTrack/{album_id}', response=Union[AlbumRetrievalSchema, str])
+def add_track_to_album(request, album_id, track_id):
+    albumInstance = Album.objects.filter(id=album_id)
+    trackInstance = Track.objects.filter(id=track_id)
+    
+    if albumInstance.exists():
+        album = albumInstance[0]
+        if trackInstance.exists():
+            track = trackInstance[0]
+            album.tracks.add(track)
+    return album
  
-# gAAAAABlHz1qPA4i1y7sb-IP2D1H6CpZHmarg5CAqOYUhmtAlanYwY_PKdzfV3o1qgM5r_GBwU7TYRWTWQCCUoW-v_5vpSHE7w==

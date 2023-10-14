@@ -214,13 +214,13 @@ To implement the features listed, you'll need various API endpoints for user int
 
 **2. User Profile Management**
 - API Endpoint for User Profile Details:
-  - [ ] Implement **GET** `/api/user/profile/`
+  - [x] Implement **GET** `/api/user/profile/`
 - API Endpoint to Upload Profile Picture:
-  - [ ] Implement **POST** `/api/user/profile-picture/`
+  - [x] Implement **POST** `/api/user/profile-picture/`
 - API Endpoint to Upload Cover Image:
   - [ ] Implement **POST** `/api/user/cover-image/`
 - API Endpoint to Edit Profile Information:
-  - [ ] Implement **PUT**/**PATCH** `/api/user/edit-profile/`
+  - [x] Implement **PUT**/**PATCH** `/api/user/edit-profile/`
 - API Endpoint for User Roles:
   - [ ] Implement **GET**, **PUT**, **PATCH** `/api/user/roles/`
 
@@ -232,11 +232,11 @@ To implement the features listed, you'll need various API endpoints for user int
 - API Endpoint to List and Create Albums:
   - [ ] Implement **GET**, **POST** `/api/music/albums/`
 - API Endpoint to Retrieve, Update, or Delete an Album:
-  - [ ] Implement **GET**, **PUT**, **DELETE** `/api/music/albums/{album_id}/`
+  - [x] Implement **GET**, **PUT**, **DELETE** `/api/music/albums/{album_id}/`
 - API Endpoint to List and Create Artists:
-  - [ ] Implement **GET**, **POST** `/api/music/artists/`
+  - [x] Implement **GET**, **POST** `/api/music/artists/`
 - API Endpoint to Retrieve, Update, or Delete an Artist:
-  - [ ] Implement **GET**, **PUT**, **DELETE** `/api/music/artists/{artist_id}/`
+  - [x] Implement **GET**, **PUT**, **DELETE** `/api/music/artists/{artist_id}/`
 - API Endpoint to List and Create Genres:
   - [ ] Implement **GET**, **POST** `/api/music/genres/`
 - API Endpoint to Retrieve, Update, or Delete a Genre:
@@ -286,7 +286,7 @@ To implement the features listed, you'll need various API endpoints for user int
 
 **8. Artist Features**
 - API Endpoint for Artist Profiles:
-  - [ ] Implement **GET**, **PUT**, **PATCH** `/api/music/artists/{artist_id}/profile/`
+  - [x] Implement **GET**, **PUT**, **PATCH** `/api/music/artists/{artist_id}/profile/`
 - API Endpoint for Uploading Music and Albums:
   - [ ] Implement **POST** `/api/music/artists/{artist_id}/music/`
 - API Endpoint for Ratings, Rankings, and Followers for Artists:

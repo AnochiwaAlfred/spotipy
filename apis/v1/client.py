@@ -1,4 +1,4 @@
-from ninja import Form, Router
+from ninja import Form, Router, UploadedFile
 from typing import List, Union
 from schemas.likeSongs import LikeSongRetrievalSchema
 from schemas.tracks import *
@@ -22,6 +22,21 @@ def get_client_by_id(request, id):
     client = Client.objects.filter(id=id)
     if client.exists():
         return client[0]
+    
+    
+@router.post('/client/create', response=ClientRetrievalSchema)
+def create_client(request, data:ClientRegistrationSchema=Form(...)):
+    client = Client.objects.create(**data.dict())
+    return client
+
+@router.post('/updateClientImage/{id}', response=Union[ClientRetrievalSchema, str])
+def update_client_image(request, id, image:UploadedFile=File(...)):
+    instance = Client.objects.filter(id=id)
+    if instance.exists():
+        client = instance[0]
+        client.image = image
+        client.save()
+        return client
     
 # @router.get('/universalSearch/{query}')
     

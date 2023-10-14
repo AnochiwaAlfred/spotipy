@@ -1,4 +1,4 @@
-from ninja import Schema
+from ninja import Schema, Form
 import uuid
 from schemas.artist import *
 from schemas.genre import *
@@ -11,7 +11,9 @@ from schemas.tracks import *
 
 
 class AlbumRegistrationSchema(Schema):
-    pass
+    title:str
+    genre_id:str=None
+    releaseDate:date
 
 class AlbumRetrievalSchema(Schema):
     id:uuid.UUID=None
@@ -21,3 +23,6 @@ class AlbumRetrievalSchema(Schema):
     genre:GenreRetrievalSchema=None
     artist:ArtistRetrievalSchema=None
     tracks:List[TrackRetrievalSchema]=None
+    
+    
+    

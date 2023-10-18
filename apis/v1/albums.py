@@ -12,18 +12,19 @@ def getAllAlbums(request):
     albums = Album.objects.all()
     return albums
 
-@router.get('/getAlbumById/{id}', response=Union[AlbumRetrievalSchema, str])
-def getAlbumById(request, id):
+@router.get('/search/{query}', response=List[AlbumRetrievalSchema])
+def search_albums(request, query):
+    albums = Album.objects.filter(Q(title__icontains=query) | Q(artist__stageName__icontains=query))
+    return albums
+
+@router.get('/album/get/{id}', response=Union[AlbumRetrievalSchema, str])
+def get_album_by_id(request, id):
     album = Album.objects.filter(id=id)
     if album.exists():
         return album[0]
     else:
         return f"Album with ID {id} does not exists"
 
-@router.get('/searchAlbums/{query}', response=List[AlbumRetrievalSchema])
-def searchAlbums(request, query):
-    albums = Album.objects.filter(Q(title__icontains=query) | Q(artist__stageName__icontains=query))
-    return albums
 
 @router.post('/album/create/{artist_id}', response=AlbumRetrievalSchema)
 def create_album(request, artist_id, data:AlbumRegistrationSchema=Form(...)):
@@ -32,7 +33,7 @@ def create_album(request, artist_id, data:AlbumRegistrationSchema=Form(...)):
 
 
 
-@router.post('/updateAlbumArt/{id}', response=Union[AlbumRetrievalSchema, str])
+@router.post('/album/updateAlbumArt/{id}', response=Union[AlbumRetrievalSchema, str])
 def update_album_art(request, id, coverArt:UploadedFile=File(...)):
     instance = Album.objects.filter(id=id)
     if instance.exists():

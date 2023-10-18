@@ -127,6 +127,8 @@ def add_track_to_album(request, artist_id, album_id, track_id):
         if trackInstance.exists():
             track = trackInstance[0]
             album.tracks.add(track)
+            album.save()
+            
     return album
  
 @router.get('/artist/followers/list/{artist_id}', response=Union[List[ClientRetrievalSchema], str])

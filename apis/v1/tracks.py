@@ -1,4 +1,4 @@
-from ninja import Router
+from ninja import Form, Router, UploadedFile
 from typing import List, Union
 from schemas.tracks import *
 from audio.models import *
@@ -36,16 +36,44 @@ def get_track_by_id(request, id):
         return f"Track with ID {id} does not exist"
     
 
-@router.get('/track/{id}/lyrics', response=Union[TrackRetrievalSchema, str])
-def get_track_lyrics(request, id):
-    track = Track.objects.filter(id=id)
+@router.get('/track/lyrics/{track_id}', response=Union[TrackRetrievalSchema, str])
+def get_track_lyrics(request, track_id):
+    track = Track.objects.filter(id=track_id)
     if track.exists():
         return track[0].lyrics
     else:
-        return f"Track with ID {id} does not exist"
+        return f"Track with ID {track_id} does not exist"
     
     
 @router.get('/searchTrack/{query}', response=List[TrackRetrievalSchema])
 def search_tracks(request, query):
     tracks = Track.objects.filter(Q(title__icontains=query) | Q(artist__stageName__icontains=query))
     return tracks
+
+@router.post('/track/add/{artist_id}', response=TrackRetrievalSchema)
+def create_track(request, artist_id, genre_id, coverImage=UploadedFile(...), audioFile=UploadedFile(...), data:TrackRegistrationSchema=Form(...)):
+    track = Track.objects.create(artist_id=artist_id, genre_id=genre_id, coverImage=coverImage, audioFile=audioFile, **data.dict())
+    return 
+
+@router.post('/track/addLyrics/{track_id}', response=Union[TrackRetrievalSchema, str])
+def add_track_lyrics(request, track_id, lyrics:str=Form(...)):
+    trackInstance = Track.objects.filter(id=track_id)
+    if trackInstance.exists():
+        track = trackInstance[0]
+        track.lyrics = lyrics
+        track.save()
+        return track.lyrics
+    else:
+        return f"Track with ID {track_id} does not exist"
+    
+
+@router.post('/track/updateCover/{track_id}', response=Union[TrackRetrievalSchema, str])
+def update_cover_image(request, track_id, coverImage=UploadedFile(...)):
+    trackInstance = Track.objects.filter(id=track_id)
+    if trackInstance.exists():
+        track = trackInstance[0]
+        track.coverImage = coverImage
+        track.save()
+        return track
+    else:
+        return f"Track with ID {track_id} does not exist"

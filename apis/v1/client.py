@@ -1,4 +1,5 @@
 from ninja import Form, Router, UploadedFile
+from django.db.models import Q
 from typing import List, Union
 from schemas.likeSongs import LikeSongRetrievalSchema
 from schemas.tracks import *
@@ -70,6 +71,16 @@ def get_playlist(request, playlist_id):
         return playlist[0]
     return f"Playlist {playlist_id} does not exist"
 
+@router.get('/client/playlists/all/{client_id}', response=Union[List[PlaylistRetrievalSchema], str])
+def get_client_playlists(request, client_id):
+    playlists = Playlist.objects.filter(client_id=client_id)
+    return playlists
+
+@router.get('/playlists/search/{query}', response=List[PlaylistRetrievalSchema])
+def searchPlaylists(request, query):
+    playlists = Playlist.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
+    return playlists
+
 @router.delete('/playlist/delete/{playlist_id}/{client_id}')
 def delete_playlist(request, client_id, playlist_id):
     playlistInstance = Playlist.objects.filter(id=playlist_id, client_id=client_id)
@@ -81,7 +92,7 @@ def delete_playlist(request, client_id, playlist_id):
     else:
         return f"Playlist with ID {id} does not exists"
 
-@router.put('/playlist/tracks/add/{client_id}/{playlist_id}/{track_id}', response=Union[PlaylistRetrievalSchema, str])
+@router.put('/playlist/addTrack/{client_id}/{playlist_id}/{track_id}', response=Union[PlaylistRetrievalSchema, str])
 def add_track_to_playlist(request, client_id, playlist_id, track_id):
     playlistInstance = Playlist.objects.filter(id=playlist_id, client_id=client_id)
     trackInstance = Track.objects.filter(id=track_id)
@@ -90,13 +101,14 @@ def add_track_to_playlist(request, client_id, playlist_id, track_id):
         if trackInstance.exists():
             track = trackInstance[0]
             playlist.tracks.add(track)
+            playlist.save()
             return playlist
         else:
             return f"Track with ID {track_id} does not exist"
     else:
         return f"Playlist with ID {playlist_id} does not exist"
 
-@router.put('/playlist/track/remove/{client_id}/{playlist_id}/{track_id}', response=PlaylistRetrievalSchema)
+@router.put('/playlist/removeTrack/{client_id}/{playlist_id}/{track_id}', response=PlaylistRetrievalSchema)
 def remove_track_from_playlist(request, client_id, playlist_id, track_id):
     playlistInstance = Playlist.objects.filter(id=playlist_id, client_id=client_id)
     trackInstance = Track.objects.filter(id=track_id)
@@ -105,6 +117,7 @@ def remove_track_from_playlist(request, client_id, playlist_id, track_id):
         if trackInstance.exists():
             track = trackInstance[0]
             playlist.tracks.remove(track)
+            playlist.save()
             return playlist
         else:
             return f"Track with ID {track_id} does not exist"

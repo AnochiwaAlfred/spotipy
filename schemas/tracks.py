@@ -9,9 +9,10 @@ from datetime import date
 
 class TrackRegistrationSchema(Schema):
     title:str=None
-    lyrics:str=None
+    releaseDate:date=None
     artist:str=None
-    genre_id:str=None
+    # genre_id:str=None
+    # lyrics:str=None
     # audioFile:str=None
     # coverImage:str=None
 

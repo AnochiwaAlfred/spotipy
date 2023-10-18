@@ -32,8 +32,8 @@ def getAllArtists(request):
     ]
     return artistsMod
 
-@router.get('/getArtistById/{id}', response=Union[ArtistRetrievalSchema, str])
-def getArtistById(request, id):
+@router.get('/artist/get/{id}', response=Union[ArtistRetrievalSchema, str])
+def get_artist_by_id(request, id):
     instance = Artist.objects.filter(id=id)
     if instance.exists():
         artist=instance[0]
@@ -54,13 +54,18 @@ def getArtistById(request, id):
         return f"Artist with ID {id} does not exists"
 
 
-@router.get('/searchArtists/{query}', response=List[ArtistRetrievalSchema])
-def searchArtists(request, query):
+@router.get('/search/{query}', response=List[ArtistRetrievalSchema])
+def search_artists(request, query):
     artists = Artist.objects.filter(stageName__icontains=query)
     return artists
 
+@router.post('/artist/create', response=ArtistRetrievalSchema)
+def create_artist(request, data:ArtistRegistrationSchema=Form(...)):
+    artist = Artist.objects.create(**data.dict())
+    return artist
+
 @router.post('/artist/update/{id}', response=Union[ArtistRetrievalSchema, str])
-def updateArtist(request, id, data:ArtistUpdateSchema=Form(...)):
+def update_artist(request, id, data:ArtistUpdateSchema=Form(...)):
     instance = Artist.objects.filter(id=id)
     if instance.exists():
         # artist = instance[0]
@@ -75,42 +80,46 @@ def updateArtist(request, id, data:ArtistUpdateSchema=Form(...)):
         return f"Error: Artist with ID {id} does not exist"
    
    
-@router.post('/artist/create', response=ArtistRetrievalSchema)
-def create_artist(request, data:ArtistRegistrationSchema=Form(...)):
-    artist = Artist.objects.create(**data.dict())
-    return artist
      
 @router.post('/updateArtistImages/{id}', response=Union[ArtistRetrievalSchema, str])
-def update_artist_images(request, id, image:UploadedFile=File(...), coverImage:UploadedFile=File(...)):
+def update_artist_image(request, id, image:UploadedFile=File(...)):
     instance = Artist.objects.filter(id=id)
     if instance.exists():
         artist = instance[0]
-        artist.image = image
+        artist.image = image 
+        artist.save()
+        return artist
+
+@router.post('/updateArtistImages/{id}', response=Union[ArtistRetrievalSchema, str])
+def update_artist_cover_image(request, id, coverImage:UploadedFile=File(...)):
+    instance = Artist.objects.filter(id=id)
+    if instance.exists():
+        artist = instance[0]
         artist.coverImage = coverImage
         artist.save()
         return artist
 
 
 
-@router.post('/album/create/{artist_id}', response=AlbumRetrievalSchema)
+@router.post('artist/album/create/{artist_id}', response=AlbumRetrievalSchema)
 def create_album(request, artist_id, data:AlbumRegistrationSchema=Form(...)):
     album = Album.objects.create(artist_id=artist_id, **data.dict())
     return album
 
 
 
-@router.post('/updateAlbumArt/{id}', response=Union[AlbumRetrievalSchema, str])
-def update_album_art(request, id, coverArt:UploadedFile=File(...)):
-    instance = Album.objects.filter(id=id)
-    if instance.exists():
-        album = instance[0]
+@router.post('/artist/album/updateAlbumArt/{artist_id}/{album_id}', response=Union[AlbumRetrievalSchema, str])
+def update_album_art(request, artist_id, album_id, coverArt:UploadedFile=File(...)):
+    albumInstance = Album.objects.filter(id=album_id, artist_id=artist_id)
+    if albumInstance.exists():
+        album = albumInstance[0]
         album.coverArt = coverArt
         album.save()
         return album
     
-@router.put('/album/addTrack/{album_id}', response=Union[AlbumRetrievalSchema, str])
-def add_track_to_album(request, album_id, track_id):
-    albumInstance = Album.objects.filter(id=album_id)
+@router.put('/artist/album/addTrack/{artist_id}/{album_id}/{track_id}', response=Union[AlbumRetrievalSchema, str])
+def add_track_to_album(request, artist_id, album_id, track_id):
+    albumInstance = Album.objects.filter(id=album_id, artist_id=artist_id)
     trackInstance = Track.objects.filter(id=track_id)
     
     if albumInstance.exists():
@@ -120,3 +129,14 @@ def add_track_to_album(request, album_id, track_id):
             album.tracks.add(track)
     return album
  
+@router.get('/artist/followers/list/{artist_id}', response=Union[List[ClientRetrievalSchema], str])
+def list_artists_followers(request, artist_id):
+    followings = Follower.objects.filter(followed_id=artist_id)
+    followers = [following.follower for following in followings]
+    return followers
+
+@router.get('/artist/followers/count/{artist_id}')
+def count_artists_followers(request, artist_id):
+    followings = Follower.objects.filter(followed_id=artist_id)
+    followersCount = followings.count()
+    return followersCount

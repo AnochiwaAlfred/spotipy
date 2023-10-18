@@ -218,7 +218,7 @@ To implement the features listed, you'll need various API endpoints for user int
 - API Endpoint to Upload Profile Picture:
   - [x] Implement **POST** `/api/user/profile-picture/`
 - API Endpoint to Upload Cover Image:
-  - [ ] Implement **POST** `/api/user/cover-image/`
+  - [x] Implement **POST** `/api/user/cover-image/`
 - API Endpoint to Edit Profile Information:
   - [x] Implement **PUT**/**PATCH** `/api/user/edit-profile/`
 - API Endpoint for User Roles:
@@ -256,21 +256,21 @@ To implement the features listed, you'll need various API endpoints for user int
 - API Endpoint for Creating and Sharing Playlists:
   - [ ] Implement **POST** `/api/user/playlists/share/`
 - API Endpoint to View Lyrics:
-  - [ ] Implement **GET** `/api/music/tracks/{track_id}/lyrics/`
+  - [x] Implement **GET** `/api/music/tracks/{track_id}/lyrics/`
 - API Endpoint to Discover New Music:
   - [ ] Implement **GET** `/api/music/discover/`
 
 **5. Playlists**
 - API Endpoint to List and Create Playlists:
-  - [ ] Implement **GET**, **POST** `/api/music/playlists/`
+  - [x] Implement **GET**, **POST** `/api/music/playlists/`
 - API Endpoint to Retrieve, Update, or Delete a Playlist:
-  - [ ] Implement **GET**, **PUT**, **DELETE** `/api/music/playlists/{playlist_id}/`
+  - [x] Implement **GET**, **PUT**, **DELETE** `/api/music/playlists/{playlist_id}/`
 - API Endpoint to Share Playlists:
   - [ ] Implement **POST** `/api/music/playlists/{playlist_id}/share/`
 - API Endpoint to Follow Other Users' Playlists:
   - [ ] Implement **POST** `/api/user/playlists/follow/`
 - API Endpoint for Playlist Browsing:
-  - [ ] Implement **GET** `/api/music/playlists/browse/`
+  - [x] Implement **GET** `/api/music/playlists/browse/`
 
 **6. Radio Stations**
 - API Endpoint for Personalized Radio Stations:
@@ -290,7 +290,7 @@ To implement the features listed, you'll need various API endpoints for user int
 - API Endpoint for Uploading Music and Albums:
   - [ ] Implement **POST** `/api/music/artists/{artist_id}/music/`
 - API Endpoint for Ratings, Rankings, and Followers for Artists:
-  - [ ] Implement **GET**, **POST** `/api/music/artists/{artist_id}/ratings/`
+  - [x] Implement **GET**, **POST** `/api/music/artists/{artist_id}/ratings/`
 
 **9. Music Recommendation**
 - API Endpoint for Music Recommendation System:
@@ -298,27 +298,28 @@ To implement the features listed, you'll need various API endpoints for user int
 
 **10. Lyrics**
 - API Endpoint to View Lyrics:
-  - [ ] Implement **GET** `/api/music/tracks/{track_id}/lyrics/`
+  - [x] Implement **GET** `/api/music/tracks/{track_id}/lyrics/`
 
 
+**Email Notifications:**
 Email notifications can be sent using Django's built-in email sending functionality and do not necessarily need separate API endpoints.
-Analytics and User Insights:
 
+**Analytics and User Insights:**
 Implement analytics on the server-side and store insights for analysis. No specific API endpoints required.
-Security:
 
+**Security:**
 Security measures should be implemented at various levels within the application and do not require specific API endpoints.
-Legal and Licensing:
 
+**Legal and Licensing:**
 Compliance with legal and licensing requirements should be integrated into the application's functionality, but no specific API endpoints are needed.
-User Support:
 
+**User Support:**
 User support channels can be provided through email or chat, but they do not require API endpoints.
-Backup and Data Recovery:
 
+**Backup and Data Recovery:**
 Regular data backup and recovery procedures are handled at the server level and do not require specific API endpoints.
-End-of-Life Planning:
 
+**End-of-Life Planning:**
 Decommissioning plan implementation does not require specific API endpoints.
 Please note that this is a high-level overview, and the exact structure and endpoints may vary based on your application's architecture and requirements. You can adapt and extend these endpoints as needed for your specific project.
 

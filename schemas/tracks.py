@@ -19,13 +19,13 @@ class TrackRegistrationSchema(Schema):
 class TrackRetrievalSchema(Schema):
     id:uuid.UUID
     title:str=None
-    lyrics:str=None
+    # lyrics:str=None
     playCount:int=None
     releaseDate:date=None
     audioFile:str=None
     coverImage:str=None
     artist:ArtistRetrievalSchema=None
-    likes:ClientRetrievalSchema=None
+    # likes:ClientRetrievalSchema=None
     genre:GenreRetrievalSchema=None
     
 class TrackRetrievalSchemaMini(Schema):

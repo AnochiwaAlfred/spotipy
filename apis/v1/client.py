@@ -70,27 +70,46 @@ def get_playlist(request, playlist_id):
         return playlist[0]
     return f"Playlist {playlist_id} does not exist"
 
-@router.post('/playlist/delete/{playlist_id}')
-def delete_playlist(request, playlist_id):
-    playlist = Playlist.objects.filter(id=playlist_id)
-    playlist[0].delete()
-    return f"Playlist {playlist[0].title} deleted"
+@router.delete('/playlist/delete/{playlist_id}/{client_id}')
+def delete_playlist(request, client_id, playlist_id):
+    playlistInstance = Playlist.objects.filter(id=playlist_id, client_id=client_id)
+    
+    if playlistInstance.exists():
+        playlist = playlistInstance[0]
+        playlist.delete()
+        return f"Playlist {playlist.title} deleted successfully"
+    else:
+        return f"Playlist with ID {id} does not exists"
 
-@router.put('/playlist/addTrack/{playlist_id}/{track_id}', response=PlaylistRetrievalSchema)
-def add_track_to_playlist(request, playlist_id, track_id):
-    playlist = Playlist.objects.get(id=playlist_id)
-    track = Track.objects.get(id=track_id)
-    playlist.tracks.add(track)
-    playlist.save()
-    return playlist
+@router.put('/playlist/tracks/add/{client_id}/{playlist_id}/{track_id}', response=Union[PlaylistRetrievalSchema, str])
+def add_track_to_playlist(request, client_id, playlist_id, track_id):
+    playlistInstance = Playlist.objects.filter(id=playlist_id, client_id=client_id)
+    trackInstance = Track.objects.filter(id=track_id)
+    if playlistInstance.exists():
+        playlist = playlistInstance[0]
+        if trackInstance.exists():
+            track = trackInstance[0]
+            playlist.tracks.add(track)
+            return playlist
+        else:
+            return f"Track with ID {track_id} does not exist"
+    else:
+        return f"Playlist with ID {playlist_id} does not exist"
 
-@router.put('/playlist/removeTrack/{playlist_id}/{track_id}', response=PlaylistRetrievalSchema)
-def remove_track_from_playlist(request, playlist_id, track_id):
-    playlist = Playlist.objects.get(id=playlist_id)
-    track = Track.objects.get(id=track_id)
-    playlist.tracks.remove(track)
-    playlist.save()
-    return playlist
+@router.put('/playlist/track/remove/{client_id}/{playlist_id}/{track_id}', response=PlaylistRetrievalSchema)
+def remove_track_from_playlist(request, client_id, playlist_id, track_id):
+    playlistInstance = Playlist.objects.filter(id=playlist_id, client_id=client_id)
+    trackInstance = Track.objects.filter(id=track_id)
+    if playlistInstance.exists():
+        playlist = playlistInstance[0]
+        if trackInstance.exists():
+            track = trackInstance[0]
+            playlist.tracks.remove(track)
+            return playlist
+        else:
+            return f"Track with ID {track_id} does not exist"
+    else:
+        return f"Playlist with ID {playlist_id} does not exist"
 
 
 @router.post('/following/FollowOrUnfollowArtist/{client_id}/{artist_id}')

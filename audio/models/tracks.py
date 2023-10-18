@@ -40,7 +40,7 @@ class Track(CoreBaseModel):
     )
     audioFile = models.FileField(upload_to="audio_files", null=True, blank=True)
     coverImage = models.ImageField(null=True, blank=True, upload_to=generate_filename)
-    likes = models.ManyToManyField('users.Client', related_name='liked_tracks', blank=True)
+    # likes = models.ManyToManyField('users.Client', related_name='liked_tracks', blank=True)
     def get_duration(self):
         return "200 Minutes"
 

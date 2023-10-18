@@ -6,13 +6,15 @@ from users.models import CustomUser
 from django.http import HttpResponseForbidden, response
 from http import HTTPStatus
 from decouple import config 
+
+# from apis.v1.clientAuth import router as clientauth_router
+# from apis.v1.lyrics import router as lyrics_router
 from apis.v1.auth import router as auth_router
-from apis.v1.clientAuth import router as clientauth_router
-from apis.v1.tracks import router as tracks_router
 from apis.v1.albums import router as albums_router
-from apis.v1.lyrics import router as lyrics_router
-from apis.v1.client import router as clients_router
 from apis.v1.artists import router as artists_router
+from apis.v1.client import router as clients_router
+from apis.v1.playlists import router as playlists_router
+from apis.v1.tracks import router as tracks_router
 from apis.v1.os import router as os_router
 
 # from plugins.email_token import sendUserEmail
@@ -59,10 +61,11 @@ api = NinjaAPI(
 api.add_router("/auth/", auth_router)
 # -----------------------------------------
 # api.add_router("/clientauth/", clientauth_router)
-api.add_router("/artists/", artists_router)
-api.add_router("/tracks/", tracks_router)
 api.add_router("/albums/", albums_router)
+api.add_router("/artists/", artists_router)
 api.add_router("/clients/", clients_router)
+api.add_router("/playlists/", playlists_router)
+api.add_router("/tracks/", tracks_router)
 # api.add_router("/lyrics/", lyrics_router)
 
 

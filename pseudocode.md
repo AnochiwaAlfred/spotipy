@@ -226,11 +226,11 @@ To implement the features listed, you'll need various API endpoints for user int
 
 **3. Music Catalog**
 - API Endpoint to List and Create Tracks:
-  - [ ] Implement **GET**, **POST** `/api/music/tracks/`
+  - [x] Implement **GET**, **POST** `/api/music/tracks/`
 - API Endpoint to Retrieve, Update, or Delete a Track:
-  - [ ] Implement **GET**, **PUT**, **DELETE** `/api/music/tracks/{track_id}/`
+  - [x] Implement **GET**, **PUT**, **DELETE** `/api/music/tracks/{track_id}/`
 - API Endpoint to List and Create Albums:
-  - [ ] Implement **GET**, **POST** `/api/music/albums/`
+  - [x] Implement **GET**, **POST** `/api/music/albums/`
 - API Endpoint to Retrieve, Update, or Delete an Album:
   - [x] Implement **GET**, **PUT**, **DELETE** `/api/music/albums/{album_id}/`
 - API Endpoint to List and Create Artists:
@@ -238,9 +238,9 @@ To implement the features listed, you'll need various API endpoints for user int
 - API Endpoint to Retrieve, Update, or Delete an Artist:
   - [x] Implement **GET**, **PUT**, **DELETE** `/api/music/artists/{artist_id}/`
 - API Endpoint to List and Create Genres:
-  - [ ] Implement **GET**, **POST** `/api/music/genres/`
+  - [x] Implement **GET**, **POST** `/api/music/genres/`
 - API Endpoint to Retrieve, Update, or Delete a Genre:
-  - [ ] Implement **GET**, **PUT**, **DELETE** `/api/music/genres/{genre_id}/`
+  - [x] Implement **GET**, **PUT**, **DELETE** `/api/music/genres/{genre_id}/`
 
 **4. User Actions**
 - API Endpoint to Like Songs and Retrieve Liked Songs:
@@ -288,7 +288,7 @@ To implement the features listed, you'll need various API endpoints for user int
 - API Endpoint for Artist Profiles:
   - [x] Implement **GET**, **PUT**, **PATCH** `/api/music/artists/{artist_id}/profile/`
 - API Endpoint for Uploading Music and Albums:
-  - [ ] Implement **POST** `/api/music/artists/{artist_id}/music/`
+  - [x] Implement **POST** `/api/music/artists/{artist_id}/music/`
 - API Endpoint for Ratings, Rankings, and Followers for Artists:
   - [x] Implement **GET**, **POST** `/api/music/artists/{artist_id}/ratings/`
 

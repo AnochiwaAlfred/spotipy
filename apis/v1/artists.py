@@ -130,6 +130,37 @@ def add_track_to_album(request, artist_id, album_id, track_id):
             album.save()
             
     return album
+
+
+@router.post('/artist/track/add/{artist_id}', response=TrackRetrievalSchema)
+def create_track(request, artist_id, genre_id, coverImage:UploadedFile(...), audioFile:UploadedFile(...), data:TrackRegistrationSchema=Form(...)):
+    track = Track.objects.create(artist_id=artist_id, genre_id=genre_id, coverImage=coverImage, audioFile=audioFile, **data.dict())
+    return track
+
+
+@router.post('/artist/track/addLyrics/{track_id}/{artist_id}', response=Union[TrackRetrievalSchema, str])
+def add_track_lyrics(request, track_id, artist_id, lyrics:str=Form(...)):
+    trackInstance = Track.objects.filter(id=track_id, artist_id=artist_id)
+    if trackInstance.exists():
+        track = trackInstance[0]
+        track.lyrics = lyrics
+        track.save()
+        return track.lyrics
+    else:
+        return f"Track with ID {track_id} does not exist"
+    
+
+@router.put('/artist/track/updateCoverImage/{track_id}/{artist_id}')
+def update_cover_image(request, track_id, artist_id, coverImage:UploadedFile(...)):
+    trackInstance = Track.objects.filter(id=track_id, artist_id=artist_id)
+    if trackInstance.exists():
+        track = trackInstance[0]
+        track.coverImage = coverImage
+        track.save()
+        return f"{track.title} Cover Image updated succesfully"
+    else:
+        return f"Track with ID {track_id} does not exist"
+ 
  
 @router.get('/artist/followers/list/{artist_id}', response=Union[List[ClientRetrievalSchema], str])
 def list_artists_followers(request, artist_id):

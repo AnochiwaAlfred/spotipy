@@ -51,9 +51,10 @@ def search_tracks(request, query):
     return tracks
 
 @router.post('/track/add/{artist_id}', response=TrackRetrievalSchema)
-def create_track(request, artist_id, genre_id, coverImage=UploadedFile(...), audioFile=UploadedFile(...), data:TrackRegistrationSchema=Form(...)):
+def create_track(request, artist_id, genre_id, coverImage:UploadedFile(...), audioFile:UploadedFile(...), data:TrackRegistrationSchema=Form(...)):
     track = Track.objects.create(artist_id=artist_id, genre_id=genre_id, coverImage=coverImage, audioFile=audioFile, **data.dict())
-    return 
+    return track
+
 
 @router.post('/track/addLyrics/{track_id}', response=Union[TrackRetrievalSchema, str])
 def add_track_lyrics(request, track_id, lyrics:str=Form(...)):
@@ -67,13 +68,13 @@ def add_track_lyrics(request, track_id, lyrics:str=Form(...)):
         return f"Track with ID {track_id} does not exist"
     
 
-@router.post('/track/updateCover/{track_id}', response=Union[TrackRetrievalSchema, str])
-def update_cover_image(request, track_id, coverImage=UploadedFile(...)):
+@router.put('/track/updateCoverImage/{track_id}')
+def update_cover_image(request, track_id, coverImage:UploadedFile(...)):
     trackInstance = Track.objects.filter(id=track_id)
     if trackInstance.exists():
         track = trackInstance[0]
         track.coverImage = coverImage
         track.save()
-        return track
+        return f"{track.title} Cover Image updated succesfully"
     else:
         return f"Track with ID {track_id} does not exist"

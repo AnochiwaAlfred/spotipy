@@ -51,6 +51,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     key = models.CharField(max_length=150, blank=True, null=True)
     is_token_verified = models.BooleanField(default=False)
     isPassRequest = models.BooleanField(default=False)
+    
+    otp = models.CharField(max_length=6, blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
+    otp_created_at = models.DateTimeField(null=True, blank=True)
 
     objects = CustomUserManager()
 

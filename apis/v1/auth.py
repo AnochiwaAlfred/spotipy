@@ -16,8 +16,8 @@ from twilio.base.exceptions import TwilioRestException
 import smtplib, ssl
 from email.message import EmailMessage
 from google_auth_oauthlib.flow import Flow
+from google_auth_oauthlib import flow as small_flow
 from  google.auth.transport.requests import AuthorizedSession
-
 
 
 router = Router(tags=["Authentication"])
@@ -71,13 +71,15 @@ def register_user_with_email(
     if password==passwordConfirm:
         user.set_password(password)
         user.save()
-    return {"message": f"Registration successful. ID --> {user.id}"}
+    return {"Message": f"Registration successful. ID --> {user.id}"}
+
 
 @router.post("/register-via-google/", auth=None)
-def register_user_with_google(request):
-    client_id =  config("GOOGLE_OAUTH2_CLIENT_ID")
+def register_user_with_google(request,  scopes: List[str]):
+    client_id = config("GOOGLE_OAUTH2_CLIENT_ID")
     client_secret = config("GOOGLE_OAUTH2_CLIENT_SECRET")
 
+    
     flow = Flow.from_client_config(
         {
             "client_id": client_id,
@@ -85,11 +87,12 @@ def register_user_with_google(request):
             "auth_uri": "https://accounts.google.com/o/oauth2/auth",
             "token_uri": "https://accounts.google.com/o/oauth2/token",
             "scope": ["profile", "email"],
-        }
+        },  scopes=["profile", "email"],
     )
-    
+
+
     def authenticate():
-        authorization_url = flow.authorization_url()
+        authorization_url = Flow.authorization_url()
 
         # Redirect the user to Google to sign in
         return redirect(authorization_url)
@@ -98,7 +101,7 @@ def register_user_with_google(request):
         authorization_code = request.args.get("code")
 
         # Exchange the authorization code for an access token
-        credentials = flow.exchange_token(authorization_code)
+        credentials = Flow.fetch_token(authorization_code=authorization_code)
 
         # Make a request to the Google People API to retrieve the user's profile information
         people_api = AuthorizedSession(credentials)
@@ -119,14 +122,15 @@ def register_user_with_google(request):
         profile = callback(request)
 
         # Do something with the user's profile information
-        return render_template("index.html", profile=profile)
+        print(profile)
+        return str(profile)
 
 
 @router.post("/send-OTP-Email/", auth=None)
 def send_otp_email(request, email):
-    generate_otp(email)
     userInstance = CustomUser.objects.filter(email=email)
     if userInstance.exists():
+        generate_otp(email)
         user = userInstance[0]
 
         email_address = config('SMTP_EMAIL')
@@ -146,15 +150,15 @@ def send_otp_email(request, email):
             with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
                 server.login(email_address, email_password)
                 server.send_message(msg)
-            return {"message": f"OTP Sent. Check email for OTP"}
+            return {"Message": f"OTP Sent. Check email for OTP"}
         else:return {"Message": f"User already verified"}
     else:return {"Error": f"User {email} does not exist."}
 
 @router.post("/send-OTP-SMS/", auth=None)
 def send_otp_sms(request, email):
-    generate_otp(email)
     userInstance = CustomUser.objects.filter(email=email)
     if userInstance.exists():
+        generate_otp(email)
         user = userInstance[0]
         # Twilio account credentials
         TWILIO_ACCOUNT_SID = config("TWILIO_ACCOUNT_SID")
@@ -176,7 +180,7 @@ def send_otp_sms(request, email):
                 )
                 # Print the message ID
                 print(message.sid)
-                return {"message": f"OTP Sent. Check sms for OTP"}
+                return {"Message": f"OTP Sent. Check sms for OTP"}
             except TwilioRestException as e:
                 return {"error": f"Error sending OTP: {e}"}
         else:return {"Message": f"User already verified"}
@@ -193,7 +197,7 @@ def verify_otp(request, email: str, otp: str):
     utc_otp_created_at = user_otp_created_at.replace(tzinfo=timezone.utc)
     
     if utc_otp_created_at < datetime.now(timezone.utc) - timedelta(minutes=5):
-        return {"message": "OTP has expired. Please request a new one."}
+        return {"Message": "OTP has expired. Please request a new one."}
     else:
     # if totp.verify(otp):
         if otp==user.otp:
@@ -201,9 +205,9 @@ def verify_otp(request, email: str, otp: str):
             user.is_active = True
             user.otp = ""
             user.save()
-            return {"message": "Email verification successful."}
+            return {"Message": "Email verification successful."}
         else:
-            return {"message": "Invalid OTP. Please try again."}
+            return {"Message": "Invalid OTP. Please try again."}
     
     
 # @router.post('/akjakjbska')
@@ -213,6 +217,60 @@ def verify_otp(request, email: str, otp: str):
 #     user.save()
 #     return f"{user.phone}"
 
+
+@router.post("/requestForgotPassword/{email}", auth=None)
+def request_forgot_password(request, email:str):
+    userInstance = CustomUser.objects.filter(email=email)
+    if userInstance.exists():
+        generate_otp(email)
+        user = userInstance[0]
+
+        email_address = config('SMTP_EMAIL')
+        email_password = config('SMTP_PASSWORD')
+        port = 465  # This is the default SSL port
+
+        # create email
+        msg = EmailMessage()
+        msg["Subject"] = "Your OTP for Email Verification"
+        msg["From"] = email_address
+        msg["To"] = user.email
+        msg.set_content(f"Your SpotiPY OTP is: {user.otp}")
+        
+        # send email
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
+            server.login(email_address, email_password)
+            server.send_message(msg)
+        return {"Message": f"OTP Sent. Check email for OTP"}
+    else:return {"Error": f"User {email} does not exist."}
+
+
+@router.post("/resetForgotPassword/{email}/", auth=None)
+def reset_forgot_password(request, email:str, otp:str, password1:str, password2:str):
+    userInstance = CustomUser.objects.filter(email=email)
+    if userInstance.exists():
+        user = userInstance[0]
+        totp = pyotp.TOTP(user.otp)
+        if not totp.verify(otp):
+            return {"Error": "Invalid OTP. Please try again."}
+
+        user_otp_created_at = user.otp_created_at
+        utc_otp_created_at = user_otp_created_at.replace(tzinfo=timezone.utc)
+        
+        if utc_otp_created_at < datetime.now(timezone.utc) - timedelta(minutes=5):
+            return {"Message": "OTP has expired. Please request a new one."}
+        
+        if otp==user.otp:
+            if password1==password2:
+                user.set_password(password1)
+                user.is_verified = True
+                user.is_active = True
+                user.otp = ""
+                user.save()
+                return {"Message": "Email verification successful."}
+            else:return {"Error":"Password mismatch"}
+        else:return {"Error": "Invalid OTP. Please try again."}
+           
 
 
 # @router.post("/requestForgotPassword/{email}", auth=None)
@@ -267,13 +325,13 @@ def verify_otp(request, email: str, otp: str):
 #                         },
 #                         template='password_confirmation.html'
 #                     )
-#                 return {"message":"Password successfully changed."}
+#                 return {"Message":"Password successfully changed."}
 
-#             else:return {"message":"Password does not match."}
+#             else:return {"Message":"Password does not match."}
 
-#         else:return {"message":"Token does not match."}
+#         else:return {"Message":"Token does not match."}
 
-#     else:return {"message":"User does not match."}
+#     else:return {"Message":"User does not match."}
 
 
 @router.post("/logout")

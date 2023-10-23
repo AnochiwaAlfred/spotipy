@@ -204,13 +204,13 @@ To implement the features listed, you'll need various API endpoints for user int
 
 **1. User Authentication**
 - API Endpoint for User Registration:
-  - [ ] Implement **POST** `/api/auth/register/`
+  - [x] Implement **POST** `/api/auth/register/`
 - API Endpoint for User Login:
-  - [ ] Implement **POST** `/api/auth/login/`
+  - [x] Implement **POST** `/api/auth/login/`
 - API Endpoint for Google Authentication:
   - [ ] Implement **GET** `/api/auth/google/`
 - API Endpoint for OTP Verification:
-  - [ ] Implement **POST** `/api/auth/verify/`
+  - [x] Implement **POST** `/api/auth/verify/`
 
 **2. User Profile Management**
 - API Endpoint for User Profile Details:

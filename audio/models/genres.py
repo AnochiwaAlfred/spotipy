@@ -12,3 +12,6 @@ class Genre(CoreBaseModel):
 
     def __str__(self):
         return self.name
+        
+    def custom_list_display():
+        return GENRE_LIST_DISPLAY

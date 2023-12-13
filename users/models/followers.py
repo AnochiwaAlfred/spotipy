@@ -15,3 +15,6 @@ class Follower(CoreBaseModel):
 
     def __str__(self):
         return f"{self.follower} --> {self.followed}"
+
+    def custom_list_display():
+        return FOLLOWER_DISPLAY

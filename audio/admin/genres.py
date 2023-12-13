@@ -7,3 +7,6 @@ from audio.models import *
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
     list_display = GENRE_LIST_DISPLAY
+    
+    class Meta:
+        verbose_name_plural = 'Genres'

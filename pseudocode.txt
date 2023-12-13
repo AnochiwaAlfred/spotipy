@@ -371,3 +371,29 @@ You can handle the response from Google and user data in your Django views as ne
 Remember to adjust the URL and routing as needed to match your specific project's structure and URL configuration.
 
 With this approach, users will be able to initiate Google Authentication from your Next.js frontend and complete the authentication process on your Django backend.
+
+
+
+
+
+
+
+
+                            <!-- Loop through registered apps -->
+                            {% for app_label, app in admin.site.apps.app_configs.items %}
+                            <li class="active">
+                                <a class="has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                    <i class="nav-icon ti ti-rocket"></i>
+                                    <span class="nav-title">{{ app.verbose_name }}</span>
+                                    <span class="nav-label label label-danger">{{ app.get_models|length }}</span>
+                                </a>
+                                <ul aria-expanded="false">
+                                    {% for model in app.get_models %}
+                                    <li> 
+                                        <a href="#" class="nav-link">{{ model._meta.verbose_name_plural }}</a>
+                                        {% comment %} <a href="{% url admin:app_label_model %}" class="nav-link">{{ model._meta.verbose_name_plural }}</a> {% endcomment %}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            {% endfor %}

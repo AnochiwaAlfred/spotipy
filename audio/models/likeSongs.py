@@ -14,3 +14,6 @@ class LikeSong(CoreBaseModel):
 
     def __str__(self):
         return self.name
+
+    def custom_list_display():
+        return LIKE_SONG_DISPLAY

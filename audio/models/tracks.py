@@ -46,3 +46,6 @@ class Track(CoreBaseModel):
 
     def __str__(self):
         return self.title
+
+    def custom_list_display():
+        return TRACK_LIST_DISPLAY

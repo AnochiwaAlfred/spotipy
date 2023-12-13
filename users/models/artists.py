@@ -2,7 +2,7 @@ from django.db import models
 from users.models import CustomUser
 from plugins.generate_filename import generate_filename
 
-
+ARTIST_DISPLAY = ['id', 'email', 'username', 'stageName', 'firstName', 'lastName']
 class Artist(CustomUser):
     image = models.ImageField(null=True, blank=True, upload_to=generate_filename)
     coverImage = models.ImageField(null=True, blank=True, upload_to=generate_filename)
@@ -15,3 +15,6 @@ class Artist(CustomUser):
 
     def __str__(self):
         return self.username
+    
+    def custom_list_display():
+        return ARTIST_DISPLAY

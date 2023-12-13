@@ -30,3 +30,6 @@ class Playlist(CoreBaseModel):
 
     def __str__(self):
         return self.title
+    
+    def custom_list_display():
+        return PLAYLIST_LIST_DISPLAY

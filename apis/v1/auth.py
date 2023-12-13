@@ -1,7 +1,7 @@
 from django.shortcuts import redirect
 from ninja import Router, Schema
 from decouple import config
-from ninja import NinjaAPI, Form
+from ninja import NinjaAPI, FormEx
 import pyotp
 from plugins.generate_otp import generate_otp
 from users.models import *
@@ -15,14 +15,12 @@ from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 import smtplib, ssl
 from email.message import EmailMessage
-from google_auth_oauthlib.flow import Flow
-from google_auth_oauthlib import flow as small_flow
-from  google.auth.transport.requests import AuthorizedSession
+# from google_auth_oauthlib.flow import Flow
+# from google_auth_oauthlib import flow as small_flow
+# from  google.auth.transport.requests import AuthorizedSession
 
 
 router = Router(tags=["Authentication"])
-
-
 
 
 
@@ -40,7 +38,7 @@ def get_user(request):
     }
 
 @router.post("/token", auth=None)  # < overriding global auth
-def get_token(request, username: str = Form(...), password: str = Form(...)):
+def get_token(request, username: str = FormEx(...), password: str = FormEx(...)):
     """
     This will be used as signup request.
     """
@@ -65,7 +63,7 @@ def register_user_with_email(
     request,
     password: str,
     passwordConfirm: str,
-    user_data: AuthUserRegistrationSchema = Form(...),
+    user_data: AuthUserRegistrationSchema = FormEx(...),
 ):
     user = CustomUser.objects.create(**user_data.dict())
     if password==passwordConfirm:
@@ -73,57 +71,6 @@ def register_user_with_email(
         user.save()
     return {"Message": f"Registration successful. ID --> {user.id}"}
 
-
-@router.post("/register-via-google/", auth=None)
-def register_user_with_google(request,  scopes: List[str]):
-    client_id = config("GOOGLE_OAUTH2_CLIENT_ID")
-    client_secret = config("GOOGLE_OAUTH2_CLIENT_SECRET")
-
-    
-    flow = Flow.from_client_config(
-        {
-            "client_id": client_id,
-            "client_secret": client_secret,
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://accounts.google.com/o/oauth2/token",
-            "scope": ["profile", "email"],
-        },  scopes=["profile", "email"],
-    )
-
-
-    def authenticate():
-        authorization_url = Flow.authorization_url()
-
-        # Redirect the user to Google to sign in
-        return redirect(authorization_url)
-
-    def callback(request):
-        authorization_code = request.args.get("code")
-
-        # Exchange the authorization code for an access token
-        credentials = Flow.fetch_token(authorization_code=authorization_code)
-
-        # Make a request to the Google People API to retrieve the user's profile information
-        people_api = AuthorizedSession(credentials)
-        response = people_api.get("https://people.googleapis.com/v1/people/me")
-
-        # Get the user's profile information
-        profile = response.json()
-
-        # Return the user's profile information
-        return profile
-
-    # Start the Google authentication flow
-    if request.method == "GET":
-        return authenticate()
-
-    # Exchange the authorization code for an access token and retrieve the user's profile information
-    elif request.method == "POST":
-        profile = callback(request)
-
-        # Do something with the user's profile information
-        print(profile)
-        return str(profile)
 
 
 @router.post("/send-OTP-Email/", auth=None)
@@ -209,13 +156,6 @@ def verify_otp(request, email: str, otp: str):
         else:
             return {"Message": "Invalid OTP. Please try again."}
     
-    
-# @router.post('/akjakjbska')
-# def asnajsndak(request, email, phone):
-#     user = CustomUser.objects.get(email=email)
-#     user.phone = phone
-#     user.save()
-#     return f"{user.phone}"
 
 
 @router.post("/requestForgotPassword/{email}", auth=None)
@@ -270,6 +210,62 @@ def reset_forgot_password(request, email:str, otp:str, password1:str, password2:
                 return {"Message": "Email verification successful."}
             else:return {"Error":"Password mismatch"}
         else:return {"Error": "Invalid OTP. Please try again."}
+        
+        
+@router.post("/logout")
+def logout(request):
+    auth = request.auth
+    user = CustomUser.objects.all().filter(token=auth)
+    user.update(**{"token": "", "key": ""})
+    return {
+        "message": "User Logged Out; You can sign in again using your username and password."
+    }
+
+
+@router.post("createSuperUser", response=AuthUserRetrievalSchema)
+def createSuperUser(
+    request, password: str, data: AuthUserRegistrationSchema = FormEx(...)
+):
+    authuser = CustomUser.objects.create(**data.dict())
+    if authuser:
+        authuser.set_password(password)
+        authuser.is_active = True
+        authuser.is_staff = True
+        authuser.is_superuser = True
+        authuser.save()
+    return authuser
+
+
+@router.get("/getAllUsers", response=List[AuthUserRetrievalSchema])
+def getAllUsers(request):
+    users = CustomUser.objects.all()
+    return users
+
+
+User = get_user_model()
+
+
+@router.post("/login/")
+def login_user(request, email:str, password:str):
+    user = authenticate(request, username=email, password=password)
+
+    if user is not None:
+        user2 = CustomUser.objects.get(email=email)
+        if user2.is_verified == True:
+            login(request, user)
+            return {"detail": "User logged in successfully"}
+        else:
+            return {"detail": "User not verified"}
+
+    return {"detail": "Invalid credentials"}
+
+
+@router.delete("/deleteUser/{user_id}")
+def delete_user(request, user_id):
+    user = CustomUser.objects.get(id=user_id)
+    user.delete()
+    return f"User {user.username} deleted successfully"
+
            
 
 
@@ -303,7 +299,7 @@ def reset_forgot_password(request, email:str, otp:str, password1:str, password2:
 
 
 # @router.post("/resetForgotPassword/{email}/", auth=None)
-# def reset_forgot_password(request, email:str, data:AuthResetPassword=Form(...)):
+# def reset_forgot_password(request, email:str, data:AuthResetPassword=FormEx(...)):
 #     fmData = data.dict()
 #     user = CustomUser.objects.all()
 #     # will check if token exists
@@ -334,56 +330,55 @@ def reset_forgot_password(request, email:str, otp:str, password1:str, password2:
 #     else:return {"Message":"User does not match."}
 
 
-@router.post("/logout")
-def logout(request):
-    auth = request.auth
-    user = CustomUser.objects.all().filter(token=auth)
-    user.update(**{"token": "", "key": ""})
-    return {
-        "message": "User Logged Out; You can sign in again using your username and password."
-    }
 
 
-@router.post("createSuperUser", response=AuthUserRetrievalSchema)
-def createSuperUser(
-    request, password: str, data: AuthUserRegistrationSchema = Form(...)
-):
-    authuser = CustomUser.objects.create(**data.dict())
-    if authuser:
-        authuser.set_password(password)
-        authuser.is_active = True
-        authuser.is_staff = True
-        authuser.is_superuser = True
-        authuser.save()
-    return authuser
+# @router.post("/register-via-google/", auth=None)
+# def register_user_with_google(request,  scopes: List[str]):
+#     client_id = config("GOOGLE_OAUTH2_CLIENT_ID")
+#     client_secret = config("GOOGLE_OAUTH2_CLIENT_SECRET")
+
+    
+#     flow = Flow.from_client_config(
+#         {
+#             "client_id": client_id,
+#             "client_secret": client_secret,
+#             "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+#             "token_uri": "https://accounts.google.com/o/oauth2/token",
+#             "scope": ["profile", "email"],
+#         },  scopes=["profile", "email"],
+#     )
 
 
-@router.get("/getAllUsers", response=List[AuthUserRetrievalSchema])
-def getAllUsers(request):
-    users = CustomUser.objects.all()
-    return users
+    # def authenticate():
+    #     authorization_url = Flow.authorization_url()
 
+    #     # Redirect the user to Google to sign in
+    #     return redirect(authorization_url)
 
-User = get_user_model()
+    # def callback(request):
+    #     authorization_code = request.args.get("code")
 
+    #     # Exchange the authorization code for an access token
+    #     credentials = Flow.fetch_token(authorization_code=authorization_code)
 
-@router.post("/login/")
-def login_user(request, data: UserLoginSchema = Form(...)):
-    user = authenticate(request, username=data.email, password=data.password)
+    #     # Make a request to the Google People API to retrieve the user's profile information
+    #     people_api = AuthorizedSession(credentials)
+    #     response = people_api.get("https://people.googleapis.com/v1/people/me")
 
-    if user is not None:
-        user2 = CustomUser.objects.get(email=data.email)
-        if user2.is_verified == True:
-            login(request, user)
-            return {"detail": "User logged in successfully"}
-        else:
-            return {"detail": "User not verified"}
+    #     # Get the user's profile information
+    #     profile = response.json()
 
-    return {"detail": "Invalid credentials"}
+    #     # Return the user's profile information
+    #     return profile
 
+    # # Start the Google authentication flow
+    # if request.method == "GET":
+    #     return authenticate()
 
-@router.delete("/deleteUser/{user_id}")
-def delete_user(request, user_id):
-    user = CustomUser.objects.get(id=user_id)
-    user.delete()
-    return f"User {user.username} deleted successfully"
+    # # Exchange the authorization code for an access token and retrieve the user's profile information
+    # elif request.method == "POST":
+    #     profile = callback(request)
+
+    #     # Do something with the user's profile information
+    #     print(profile)
+    #     return str(profile)

@@ -1,0 +1,35 @@
+ 
+
+ {% for app in custom_app_list %}
+        <li class="
+        {% if app.is_active %}
+            active
+        {% endif %}
+            ">
+        <a class="{% if app.has_children %}
+            has-arrow
+            {% endif %}" href="
+                {% if not app.has_children %}
+                /{{adminsite}}/{{ app.url }}
+                {% else %}
+                #
+                {% endif %}
+                " aria-expanded="false">
+                <i class="{{app.icon}}"></i>
+                <span class="nav-title">{{ app.title }}</span>
+                {% comment %} <span class="nav-label label label-danger">{{ app.models|length }}</span> {% endcomment %}
+            </a>
+
+
+            {% if app.has_children %}
+                <ul aria-expanded="false">
+                    {% for child in app.children %}
+                    <li> 
+                        <a href="/{{adminsite}}/{{ child.url }}" class="nav-link">{{ child.title }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+    </li>
+{% endfor %}

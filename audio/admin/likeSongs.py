@@ -7,3 +7,6 @@ from audio.models import *
 @admin.register(LikeSong)
 class LikeSongAdmin(admin.ModelAdmin):
     list_display = LIKE_SONG_DISPLAY
+
+    class Meta:
+        verbose_name_plural = 'Like Songs'

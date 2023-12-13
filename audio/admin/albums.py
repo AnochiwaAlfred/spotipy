@@ -7,3 +7,6 @@ from audio.models import *
 @admin.register(Album)
 class AlbumAdmin(admin.ModelAdmin):
     list_display = ALBUM_LIST_DISPLAY
+
+    class Meta:
+        verbose_name_plural = 'Albums'

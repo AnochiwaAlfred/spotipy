@@ -7,3 +7,6 @@ from audio.models import *
 @admin.register(Playlist)
 class PlaylistAdmin(admin.ModelAdmin):
     list_display = PLAYLIST_LIST_DISPLAY
+
+    class Meta:
+        verbose_name_plural = 'Playlists'

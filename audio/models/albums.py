@@ -34,3 +34,6 @@ class Album(CoreBaseModel):
 
     def __str__(self):
         return self.title
+    
+    def custom_list_display():
+        return ALBUM_LIST_DISPLAY

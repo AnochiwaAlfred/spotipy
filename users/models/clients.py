@@ -2,7 +2,7 @@ from django.db import models
 from users.models import CustomUser
 from plugins.generate_filename import generate_filename
 
-
+CLIENT_DISPLAY = ['id', 'email', 'username', 'firstName', 'lastName']
 class Client(CustomUser):
     image = models.ImageField(null=True, blank=True, upload_to=generate_filename)
     # favoriteTracks = models.ManyToManyField(
@@ -17,3 +17,6 @@ class Client(CustomUser):
 
     def __str__(self):
         return self.username
+    
+    def custom_list_display():
+        return CLIENT_DISPLAY

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+from plugins.generate_filename import generate_filename
 from plugins.code_generator import generateUniqueId
 
 # Create your models here.
@@ -28,7 +29,7 @@ class CustomUserManager(UserManager):
         extra_fields.setdefault("is_superuser", True)
         return self._create_user(username, password, email, **extra_fields)
 
-
+CUSTOM_USER_DISPLAY = ['id', 'email', 'username', 'firstName', 'lastName', 'is_superuser']
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     # DEFAULT FIELD
     email = models.EmailField(("email address"), unique=True)
@@ -39,6 +40,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     lastName = models.CharField(max_length=300, null=True, blank=True)
     phone = models.CharField(max_length=300, null=True, blank=True)
     dateOfBirth = models.DateField(null=True, blank=True)
+    super_image = models.ImageField(null=True, blank=True, upload_to=generate_filename)
     created = models.DateTimeField(auto_now=True)
 
     is_staff = models.BooleanField(default=False)
@@ -68,3 +70,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+    
+    def custom_list_display():
+        return CUSTOM_USER_DISPLAY

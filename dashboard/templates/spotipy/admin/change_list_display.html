@@ -1,0 +1,26 @@
+
+
+<table class="my-custom-list" id="changelist-table">
+    <thead>
+      <tr>
+        {% for field_name in list_display %}
+            <th>{{ field_name|upper }}</th>
+        {% endfor %} 
+      </tr>
+    </thead>
+    <tbody>
+        {% for obj in cl.result_list %}
+            <tr class="{% if obj.is_active %}active{% endif %}">
+                {% for field_name in list_display %}
+                <td>dfd 
+                {% comment %} <td>{{getattr(obj, field_nam.name)}}</td> {% endcomment %}
+                {% comment %} <td>{{obj.field_name}}</td> {% endcomment %}
+                    {% comment %} <td>{{getattr(obj, field_name)}}</td> {% endcomment %}
+                    {% comment %} <td>
+                        <a href="{{ obj.get_admin_url }}">{{ obj.title }}</a>
+                    </td> {% endcomment %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
